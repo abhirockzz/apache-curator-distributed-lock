@@ -1,4 +1,4 @@
-## Explore distributed locks using InterProcessMutex in Apache Curator
+## Distributed/interprocess mutexes/locks using using Apache Curator
 
 For details, read the [blog](https://simplydistributed.wordpress.com/2016/12/21/apache-curator-distributed-try-locks)
 
