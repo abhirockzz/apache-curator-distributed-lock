@@ -2,6 +2,8 @@
 
 For details, read the [blog](https://simplydistributed.wordpress.com/2016/12/21/apache-curator-distributed-try-locks)
 
+### Behavior
+
 In the task which [blocks for the lock](https://github.com/abhirockzz/apache-curator-distributed-lock/blob/master/src/main/java/com/wordpress/simplydistributed/curator/disributedlock/BlockingLockTest.java#L30)
 
 - for both the threads that run the task, the for loop will be executed twice
@@ -11,3 +13,7 @@ In the task which initiates a [non-blocking request for the lock](https://github
 
 - for both threads, only one iteration of the loop in the task is executed
 - this is because the thread which fails to get the lock in the first attempt does not block - it simply returns and repeats the loop
+
+### Note
+
+Please change the Zookeeper instance details before testing things out - [here](https://github.com/abhirockzz/apache-curator-distributed-lock/blob/master/src/main/java/com/wordpress/simplydistributed/curator/disributedlock/BlockingLockTest.java#L15) and [here](https://github.com/abhirockzz/apache-curator-distributed-lock/blob/master/src/main/java/com/wordpress/simplydistributed/curator/disributedlock/NonBlockingLockTest.java#L15)
