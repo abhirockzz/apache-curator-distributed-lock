@@ -1,5 +1,7 @@
 package com.wordpress.simplydistributed.curator.disributedlock;
 
+import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -16,23 +18,24 @@ public class NonBlockingLockTest {
         final String lockPath = "/lock";
         
         CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(zkConnect, new ExponentialBackoffRetry(1000, 3));
-        curatorClient.start();
+        curatorClient.start();        
         final InterProcessMutex dMutex = new InterProcessMutex(curatorClient, lockPath);
 
         Runnable task = new Runnable() {
             @Override
             public void run() {
+                System.out.println("In NonBlockingLockTest");
                 AtomicBoolean acquired = null;
                 for (int i = 1; i <= 2; i++) {
                     try {
-                        System.out.println("Process " + Thread.currentThread().getName() + " TRYING lock");
+                        System.out.println("Process " + Thread.currentThread().getName() + " TRYING lock at "+ new Date());
                         acquired = new AtomicBoolean(false);
                         if (dMutex.acquire(2, TimeUnit.SECONDS)) {
                             //dMutex.acquire();
                             acquired.set(true);
-                            System.out.println("Process " + Thread.currentThread().getName() + " ACQUIRED lock. Iteration " + i);
+                            System.out.println("Process " + Thread.currentThread().getName() + " ACQUIRED lock. Iteration " + i + " at "+ new Date());
                             System.out.println("Process " + Thread.currentThread().getName() + " WORK-IN-PROGRESS");
-                            Thread.sleep(5000); //simulating some work
+                            Thread.sleep(3000); //simulating some work
                         }
 
                     } catch (Exception ex) {
@@ -42,7 +45,7 @@ public class NonBlockingLockTest {
                         try {
                             if (acquired.get()) {
                                 dMutex.release();
-                                System.out.println("Process " + Thread.currentThread().getName() + " RELEASED lock");
+                                System.out.println("Process " + Thread.currentThread().getName() + " RELEASED lock at "+ new Date());
                             }
 
                         } catch (Exception ex) {
@@ -54,10 +57,7 @@ public class NonBlockingLockTest {
             }
         };
 
-        new Thread(task, "1").start();
-        new Thread(task, "2").start();
-        //new Thread(task, "3").start();
-        //new Thread(task, "4").start();
+        new Thread(task, UUID.randomUUID().toString()).start();
     }
 
 }

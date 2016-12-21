@@ -1,6 +1,8 @@
 package com.wordpress.simplydistributed.curator.disributedlock;
 
 
+import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,16 +24,17 @@ public class BlockingLockTest {
         Runnable task = new Runnable() {
             @Override
             public void run() {
+                System.out.println("In BlockingLockTest");
                 AtomicBoolean acquired = null;
                 for (int i = 1; i <= 2; i++) {
                     try {
-                        System.out.println("Process " + Thread.currentThread().getName() + " TRYING lock");
+                        System.out.println("Process " + Thread.currentThread().getName() + " TRYING lock at "+ new Date());
                         acquired = new AtomicBoolean(false);
                         dMutex.acquire();
                         acquired.set(true);
-                        System.out.println("Process " + Thread.currentThread().getName() + " ACQUIRED lock. Iteration " + i);
+                        System.out.println("Process " + Thread.currentThread().getName() + " ACQUIRED lock. Iteration " + i + " at "+ new Date());
                         System.out.println("Process " + Thread.currentThread().getName() + " WORK-IN-PROGRESS");
-                        Thread.sleep(5000); //simulating some work
+                        Thread.sleep(1000); //simulating some work
 
                     } catch (Exception ex) {
                         Logger.getLogger(BlockingLockTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -40,7 +43,7 @@ public class BlockingLockTest {
                         try {
                             if (acquired.get()) {
                                 dMutex.release();
-                                System.out.println("Process " + Thread.currentThread().getName() + " RELEASED lock");
+                                System.out.println("Process " + Thread.currentThread().getName() + " RELEASED lock at "+ new Date());
                             }
 
                         } catch (Exception ex) {
@@ -52,10 +55,7 @@ public class BlockingLockTest {
             }
         };
 
-        new Thread(task, "1").start();
-        new Thread(task, "2").start();
-        //new Thread(task, "3").start();
-        //new Thread(task, "4").start();
+        new Thread(task, UUID.randomUUID().toString()).start();
     }
 
 }
